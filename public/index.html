@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Half Paper — Student Diary</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <span class="logo-icon">📓</span>
+      <h1>Half Paper</h1>
+      <p class="tagline">Your personal student diary</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" id="tab-login" onclick="showTab('login')">Login</button>
+      <button class="tab" id="tab-register" onclick="showTab('register')">Register</button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="form-login" class="auth-form" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label for="login-username">Username</label>
+        <input type="text" id="login-username" placeholder="Enter your username" required autocomplete="username" />
+      </div>
+      <div class="form-group">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" placeholder="Enter your password" required autocomplete="current-password" />
+      </div>
+      <p id="login-error" class="error-msg hidden"></p>
+      <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+
+    <!-- Register Form -->
+    <form id="form-register" class="auth-form hidden" onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label for="reg-username">Username</label>
+        <input type="text" id="reg-username" placeholder="Choose a username (min 3 chars)" required autocomplete="username" />
+      </div>
+      <div class="form-group">
+        <label for="reg-password">Password</label>
+        <input type="password" id="reg-password" placeholder="Choose a password (min 6 chars)" required autocomplete="new-password" />
+      </div>
+      <p id="register-error" class="error-msg hidden"></p>
+      <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+    </form>
+  </div>
+
+  <script>
+    let csrfToken = null;
+
+    // Redirect if already logged in and fetch CSRF token
+    Promise.all([
+      fetch('/api/me').then(r => r.json()),
+      fetch('/api/csrf-token').then(r => r.json())
+    ]).then(([meData, csrfData]) => {
+      if (meData.user) { window.location.href = '/diary.html'; return; }
+      csrfToken = csrfData.csrfToken;
+    });
+
+    function showTab(tab) {
+      document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+      document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+      document.getElementById('form-login').classList.toggle('hidden', tab !== 'login');
+      document.getElementById('form-register').classList.toggle('hidden', tab !== 'register');
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const errEl = document.getElementById('login-error');
+      errEl.classList.add('hidden');
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken || '' },
+        body: JSON.stringify({
+          username: document.getElementById('login-username').value.trim(),
+          password: document.getElementById('login-password').value
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        errEl.textContent = data.error;
+        errEl.classList.remove('hidden');
+      } else {
+        window.location.href = '/diary.html';
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const errEl = document.getElementById('register-error');
+      errEl.classList.add('hidden');
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken || '' },
+        body: JSON.stringify({
+          username: document.getElementById('reg-username').value.trim(),
+          password: document.getElementById('reg-password').value
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        errEl.textContent = data.error;
+        errEl.classList.remove('hidden');
+      } else {
+        window.location.href = '/diary.html';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Half Paper — My Diary</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="diary-page">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="logo-icon">📓</span>
+      <span class="sidebar-title">Half Paper</span>
+      <button class="sidebar-close" id="sidebar-close-btn" onclick="toggleSidebar()" aria-label="Close sidebar">✕</button>
+    </div>
+
+    <button class="btn btn-primary btn-new-entry" onclick="openEditor()">+ New Entry</button>
+
+    <div class="sidebar-section-label">My Entries</div>
+    <ul class="entry-list" id="entry-list">
+      <li class="entry-list-empty">No entries yet. Start writing!</li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <span id="username-display"></span>
+      <button class="btn btn-ghost btn-sm" onclick="handleLogout()">Logout</button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="main-wrapper">
+    <header class="topbar">
+      <button class="btn btn-ghost btn-icon" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+      <span class="topbar-title" id="topbar-title">My Diary</span>
+    </header>
+
+    <main class="main-content" id="main-content">
+
+      <!-- Welcome screen -->
+      <div id="view-welcome" class="view view-welcome">
+        <div class="welcome-art">📖</div>
+        <h2>Welcome to your diary</h2>
+        <p>Click <strong>+ New Entry</strong> to start writing your thoughts, reflections, and experiences.</p>
+      </div>
+
+      <!-- Editor -->
+      <div id="view-editor" class="view hidden">
+        <div class="editor-toolbar">
+          <h2 id="editor-heading">New Entry</h2>
+          <div class="editor-actions">
+            <button class="btn btn-ghost btn-sm" onclick="cancelEdit()">Cancel</button>
+            <button class="btn btn-primary btn-sm" onclick="saveEntry()">Save</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="entry-title">Title</label>
+          <input type="text" id="entry-title" placeholder="What's on your mind today?" maxlength="120" />
+        </div>
+
+        <div class="form-group mood-group">
+          <label>Mood</label>
+          <div class="mood-picker" id="mood-picker">
+            <button type="button" class="mood-btn" data-mood="happy" title="Happy">😄</button>
+            <button type="button" class="mood-btn" data-mood="excited" title="Excited">🤩</button>
+            <button type="button" class="mood-btn" data-mood="grateful" title="Grateful">🙏</button>
+            <button type="button" class="mood-btn selected" data-mood="neutral" title="Neutral">😐</button>
+            <button type="button" class="mood-btn" data-mood="anxious" title="Anxious">😰</button>
+            <button type="button" class="mood-btn" data-mood="sad" title="Sad">😢</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="entry-content">Write here…</label>
+          <textarea id="entry-content" placeholder="Write your diary entry here…" rows="14"></textarea>
+        </div>
+
+        <p id="editor-error" class="error-msg hidden"></p>
+      </div>
+
+      <!-- Read view -->
+      <div id="view-read" class="view hidden">
+        <div class="read-toolbar">
+          <div class="read-meta">
+            <span class="read-mood" id="read-mood"></span>
+            <span class="read-date" id="read-date"></span>
+          </div>
+          <div class="read-actions">
+            <button class="btn btn-ghost btn-sm" onclick="editCurrentEntry()">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteCurrentEntry()">Delete</button>
+          </div>
+        </div>
+        <h2 class="read-title" id="read-title"></h2>
+        <div class="read-body" id="read-body"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Delete confirmation modal -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <h3>Delete this entry?</h3>
+      <p>This cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/diary.js"></script>
+</body>
+</html>
